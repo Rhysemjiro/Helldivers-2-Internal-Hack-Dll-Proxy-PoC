@@ -1,4 +1,4 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+// NewDllMain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
 #include "Windows.h"
 #include "version.h"
@@ -10,41 +10,40 @@
 #include <conio.h> // For _getch() on Windows
 #include "xorstr.hpp"
 
+HANDLE hNewMainThread;
+HMODULE g_NewhModule;
 
-HANDLE hMainThread;
-HMODULE g_hModule;
-
-// Function to initialize and show the console window
-void InitializeConsole() {
-    FILE* pFile = nullptr;
+// Function to initialize and display the console window
+void InitializeNewConsole() {
+    FILE* pNewFile = nullptr;
     AllocConsole();
-    //SetConsoleTitle(_XOR_(L"Helldivers 2 DLL Proxy PoC"));
-    freopen_s(&pFile, _XOR_("CONOUT$"), _XOR_("w"), stdout);
+    //SetConsoleTitle(_XOR_(L"GalacticHeroes 3 Proxy PoC"));
+    freopen_s(&pNewFile, _XOR_("CONOUT$"), _XOR_("w"), stdout);
 }
 
-void DestroyConsole()
+void DestroyNewConsole()
 {
     DestroyWindow(GetConsoleWindow());
     FreeConsole();
 }
 
 //Check Key Pressed
-bool keyPressed(int vKey)
+bool NewKeyPressed(int vKey)
 {
     return (GetAsyncKeyState(vKey) & 1);
 }
 
 //Console Menu using checkbox
-struct Checkbox {
-    std::string title;
-    bool checked;
+struct NewCheckbox {
+    std::string NewTitle;
+    bool NewChecked;
 };
 
 // Function to display checkboxes
-void displayCheckboxes(const std::vector<Checkbox>& checkboxes, size_t selectedCheckbox) {
+void displayNewCheckboxes(const std::vector<NewCheckbox>& NewCheckboxes, size_t NewSelectedCheckbox) {
     system("cls"); // Clear the console (Windows specific)
 
-    printf(_XOR_("[Init] - Helldiver 2 PoC DLL Proxy...\n"));
+    printf(_XOR_("[Init] - GalacticHeroes 3 PoC Proxy...\n"));
     printf(_XOR_("[Init] - Thanks to cfemen and gir489...\n"));
 
     printf(_XOR_("[Ready] : Select some of the features below by pressing the [Space] key.\n"));
@@ -52,99 +51,90 @@ void displayCheckboxes(const std::vector<Checkbox>& checkboxes, size_t selectedC
     printf(_XOR_("[Ready] : After pressing [Enter], the selected features cannot be changed.\n"));
 
     std::cout << _XOR_("Checkboxes:\n");
-    for (size_t i = 0; i < checkboxes.size(); ++i) {
-        if (i == selectedCheckbox) {
+    for (size_t i = 0; i < NewCheckboxes.size(); ++i) {
+        if (i == NewSelectedCheckbox) {
             std::cout << "> ";
         }
         else {
             std::cout << "  ";
         }
 
-        std::cout << "[" << (checkboxes[i].checked ? 'X' : ' ') << "] " << checkboxes[i].title << "\n";
+        std::cout << "[" << (NewCheckboxes[i].NewChecked ? 'X' : ' ') << "] " << NewCheckboxes[i].NewTitle << "\n";
     }
     std::cout << "\n";
 }
 
-DWORD WINAPI Payload(LPVOID lpParam)
+DWORD WINAPI NewPayload(LPVOID lpParam)
 {
     // Initialize the proxy for the DLL
-    HMODULE dllfwd = dllforward::setup();
-    if (dllfwd)
-        CloseHandle(dllfwd);
+    HMODULE Newdllfwd = dllforward::setup();
+    if (Newdllfwd)
+        CloseHandle(Newdllfwd);
 
     //Console Menu
-    std::vector<Checkbox> checkboxes = { 
+    std::vector<NewCheckbox> NewCheckboxes = {
           {_XOR_("Inf Health"), false}
         , {_XOR_("Inf Grenades"), false}
-        , {_XOR_("Inf Grenades(Legit)"), false}
         , {_XOR_("Inf Ammo"), false}
-        , {_XOR_("Inf Ammo(Legit)"), false}
         , {_XOR_("Inf Syringes"), false}
-        , {_XOR_("Inf Syringes(Legit)"), false}
         , {_XOR_("Inf Stamina"), false}
         , {_XOR_("Inf Stratagems"), false}
-        , {_XOR_("MoveSpeed X6"), false}
         , {_XOR_("Inf Mission Time"), false}
         //, {"One / Two Hit Kill ( Bile Titan Bug, Aim Only Head )", false}
         , {_XOR_("No Reload"), false}
         , {_XOR_("Max Resources"), false}
-        , {_XOR_("Add 5 Samples"), false}
-        , {_XOR_("No Recoil"), false}
         , {_XOR_("Inf Backpack"), false}
         , {_XOR_("Inf Special Weapon"), false}
-        , {_XOR_("No Laser Cannon Overheat"), false}
         , {_XOR_("Instant Railgun"), false}
         , {_XOR_("Show All Map Icons"), false}
-        , {_XOR_("No Stationary Turret Overheat"), false}
         , {_XOR_("No Backpack Shield Cooldown"), false}
-        , {_XOR_("No JetPack Cooldown"), false}
         , {_XOR_("All Stratagems in Loadout"), false}
-        , {_XOR_("All Equipment in Armory"), false}
-        , {_XOR_("All Armor in Armory"), false}
-    
-    }; // Initialize all checkboxes to unchecked
-    const int numCheckboxes = checkboxes.size();
-    size_t selectedCheckbox = 0;
-    char userInput;
+        , {_XOR_("All Gear in Loadout"), false}
+        , {_XOR_("All Armor in Loadout"), false}
 
-    HMODULE moduleHandle = nullptr;
-    GameData gData;
+    }; // Initialize all checkboxes to unchecked
+    const int NewNumCheckboxes = NewCheckboxes.size();
+    size_t NewSelectedCheckbox = 0;
+    char NewUserInput;
+
+    HMODULE NewModuleHandle = nullptr;
+    GameData gNewData;
 
     do
     {
-        moduleHandle = GetModuleHandle(_XOR_(L"game.dll"));
+        NewModuleHandle = GetModuleHandle(_XOR_(L"game.dll"));
         Sleep(1000);
-    } while (!moduleHandle);
+    } while (!NewModuleHandle);
     Sleep(100);
 
 
     //Show Console
-    InitializeConsole();
-    
+    InitializeNewConsole();
+
     do {
 
-        displayCheckboxes(checkboxes, selectedCheckbox);
+        displayNewCheckboxes(NewCheckboxes, NewSelectedCheckbox);
 
         // Get user input
-        userInput = _getch(); // Use _getch() for reading a single character without pressing Enter
+        NewUserInput = _getch(); // Use _getch() for reading a single character without pressing Enter
 
         // Handle arrow key input
-        switch (userInput) {
+        switch (NewUserInput) {
         case 72: // Up arrow key
-            selectedCheckbox = (selectedCheckbox == 0) ? numCheckboxes - 1 : selectedCheckbox - 1;
+            NewSelectedCheckbox = (NewSelectedCheckbox == 0) ? NewNumCheckboxes - 1 : NewSelectedCheckbox - 1;
             break;
 
         case 80: // Down arrow key
-            selectedCheckbox = (selectedCheckbox == numCheckboxes - 1) ? 0 : selectedCheckbox + 1;
+            NewSelectedCheckbox = (NewSelectedCheckbox == NewNumCheckboxes - 1) ? 0 : NewSelectedCheckbox + 1;
             break;
 
         case ' ': // Space bar
             // Toggle the state of the selected checkbox
-            checkboxes[selectedCheckbox].checked = !checkboxes[selectedCheckbox].checked;
+            NewCheckboxes[NewSelectedCheckbox].NewChecked = !NewCheckboxes[NewSelectedCheckbox].NewChecked;
             break;
 
         case 13: // Enter key
-            std::cout << _XOR_("Activate Cheat Feature.\n");
+            std::cout << _XOR_("Activate Enhancements Feature.\n");
             break;
 
         case 27: // Esc key
@@ -156,13 +146,14 @@ DWORD WINAPI Payload(LPVOID lpParam)
             break;
         }
 
-    } while (userInput != 13); // Loop until the Esc key is pressed
+    } while (NewUserInput != 13); // Loop until the Esc key is pressed
+
 
     for (size_t i = 0; i < checkboxes.size(); ++i) {
         if (checkboxes[i].checked)
         {
 
-            if (checkboxes[i].title == _XOR_("Inf Health"))
+            if (checkboxes[i].title == _XOR_("Enh Health"))
             {
                 if (!gData.InfHealth) // no need but its old code when activate using hotkey, but need to much hotkey for all feature
                 {
@@ -216,28 +207,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == _XOR_("Inf Grenades(Legit)"))
-            {
-                if (!gData.InfGrenadesLegit && !gData.InfGrenades)
-                {
-                    uintptr_t GrenadesAddress = Memory::FindPattern(_XOR_("game.dll"), _XOR_("4D 03 C6 41 FF 08"));
-                    BYTE GrenadeBytes[] =
-                    {
-                        0x4D, 0x01, 0xF0,                               //add r8,r14
-                        0x41, 0x83, 0x38, 0x01,                         //cmp dword ptr [r8],01
-                        0x74, 0x03,                                     //je short @f
-                        0x41, 0xFF, 0x08,                               // dec [r8]
-                        0x4A, 0x8B, 0x84, 0xED, 0x30, 0x20, 0x00, 0x00, // mov rax,[rbp+r13*8+00002030]
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Grenades
-                    };
-                    LPVOID memory = Memory::AllocateMemory(GrenadesAddress, sizeof(GrenadeBytes));
-                    Memory::CreateTrampoline(GrenadesAddress, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, GrenadesAddress + 14, GrenadeBytes, Memory::ArrayLength(GrenadeBytes));
-                    gData.InfGrenadesLegit = !gData.InfGrenadesLegit;
-                    printf(_XOR_("[Active] Infinite Grenades(Legit)\n"));
-                }
-            }
-
             if (checkboxes[i].title == _XOR_("Inf Ammo"))
             {
                 if (!gData.InfAmmo)
@@ -250,28 +219,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == _XOR_("Inf Ammo(Legit)"))
-            {
-                if (!gData.InfAmmoLegit && !gData.InfAmmo)
-                {
-                    uintptr_t AmmoAddress = Memory::FindPattern(_XOR_("game.dll"), _XOR_("41 83 2C C2 01"));
-                    BYTE AmmoBytes[] =
-                    {
-                        0x41, 0x83, 0x3C, 0xC2, 0x02,                    // cmp dword ptr [r10+rax*8],#2
-                        0x7E, 0x05,                                      // jle short @f
-                        0x41, 0x83, 0x2C, 0xC2, 0x01,                    // sub dword ptr [r10+rax*8],01
-                        0x4D, 0x8D, 0x04, 0xC2,			                 // lea r8,[r10+rax*8]
-                        0x49, 0x8B, 0x84, 0xCA, 0x28, 0x20, 0x00, 0x00,  // mov rax,[r10+rcx*8+00002028]
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_SubtractAmmo
-                    };
-                    LPVOID memory = Memory::AllocateMemory(AmmoAddress, sizeof(AmmoBytes));
-                    Memory::CreateTrampoline(AmmoAddress, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, AmmoAddress + 17, AmmoBytes, Memory::ArrayLength(AmmoBytes));
-                    gData.InfAmmoLegit = !gData.InfAmmoLegit;
-                    printf(_XOR_("[Active] Infinite Ammo(Legit)\n"));
-                }
-            }
-
             if (checkboxes[i].title == _XOR_("Inf Syringes"))
             {
                 if (!gData.InfSyringes)
@@ -280,29 +227,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                     Memory::Nop((LPVOID)(Syringes), 3);
                     gData.InfSyringes = !gData.InfSyringes;
                     printf(_XOR_("[Active] Infinite Syringes\n"));
-                }
-            }
-
-            if (checkboxes[i].title == _XOR_("Inf Syringes(Legit)"))
-            {
-                if (!gData.InfSyringesLegit && !gData.InfSyringes)
-                {
-                    uintptr_t SyringesAddress = Memory::FindPattern(_XOR_("game.dll"), _XOR_("48 03 C9 45 8B BC CA C8 75 00 00"));
-                    BYTE SyringesBytes[] =
-                    {
-                        0x48, 0x01, 0xC9,                                     // add rcx,rcx
-                        0x45, 0x8B, 0xBC, 0xCA, 0xC8, 0x75, 0x00, 0x00,       // mov r15d,[r10+rcx*8+000075C8]
-                        0x41, 0x83, 0xBC, 0xCA, 0xC8, 0x75, 0x00, 0x00, 0x01, // cmp dword ptr [r10+rcx*8+000075C8],01 { 1 }
-                        0x74, 0x03,                                           // je short @f
-                        0x41, 0xFF, 0xCF,                                     // dec r15d
-                        0x39, 0xD0,                                           // cmp eax,edx
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Syringes
-                    };
-                    LPVOID memory = Memory::AllocateMemory(SyringesAddress, sizeof(SyringesBytes));
-                    Memory::CreateTrampoline(SyringesAddress, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, SyringesAddress + 14, SyringesBytes, Memory::ArrayLength(SyringesBytes));
-                    gData.InfSyringesLegit = !gData.InfSyringesLegit;
-                    printf(_XOR_("[Active] Infinite Syringes(Legit)\n"));
                 }
             }
 
@@ -388,26 +312,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == _XOR_("Add 5 Samples"))
-            {
-                if (!gData.Add5Resources && !gData.MaxResources)
-                {
-                    uintptr_t ResourcesAddress = Memory::FindPattern(_XOR_("game.dll"), _XOR_("45 01 B4 8A EC 17 00 00"));
-                    BYTE ResourcesBytes[] =
-                    {
-                        0x41, 0xBE, 0x05, 0x00, 0x00, 0x00,              // mov r14d, #5
-                        0x45, 0x01, 0xB4, 0x8A, 0xEC, 0x17, 0x00, 0x00,  // add [r10+rcx*4+000017EC],r14d
-                        0x48, 0x8D, 0x82, 0x99, 0x00, 0x00, 0x00,        // lea rax,[rdx+00000099]
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Add5Resources
-                    };
-                    LPVOID memory = Memory::AllocateMemory(ResourcesAddress, sizeof(ResourcesBytes));
-                    Memory::CreateTrampoline(ResourcesAddress, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, ResourcesAddress + 15, ResourcesBytes, Memory::ArrayLength(ResourcesBytes));
-                    gData.Add5Resources = !gData.Add5Resources;
-                    printf(_XOR_("[Active] Add 5 Samples\n"));
-                }
-            }
-
             if (checkboxes[i].title == _XOR_("Instant Railgun"))
             {
                 if (!gData.InstantRailGun)
@@ -429,57 +333,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            
-            if (checkboxes[i].title == _XOR_("MoveSpeed X6"))
-            {
-                if (!gData.Speedhack)
-                {
-                    BYTE SpeedhackByte[] =
-                    {
-                        0x41, 0xC7, 0x46, 0x0C, 0x00, 0x00, 0xC0, 0x40,
-                        0xF3, 0x41, 0x0F, 0x59, 0x56, 0x0C,
-                        0xF3, 0x41, 0x0F, 0x59, 0x56, 0x10,
-                        0x0F, 0x28, 0xE2,
-                        0xFF, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 //JMP return_Railgun
-                    };
-
-                    uintptr_t Speedhack = Memory::FindPattern(_XOR_("game.dll"), _XOR_("F3 41 ?? ?? ?? ?? F3 41 ?? ?? ?? ?? 0F 28 ?? F3 0F ?? ?? 0F 5A"));
-
-                    LPVOID memory = Memory::AllocateMemory(Speedhack, sizeof(SpeedhackByte));
-                    Memory::CreateTrampoline(Speedhack, memory);
-                    Memory::WriteAssemblyInstructions((uintptr_t)memory, Speedhack + 15, SpeedhackByte, Memory::ArrayLength(SpeedhackByte));
-                    gData.Speedhack = !gData.Speedhack;
-                    printf(_XOR_("[Active] MoveSpeed x6\n"));
-                }
-            }
-
-            if (checkboxes[i].title == _XOR_("No Recoil"))
-            {
-                if (!gData.Recoil)
-                {
-                    BYTE RecoilByte[] =
-                    {
-                        0xEB
-                    };
-
-                    uintptr_t Recoil = Memory::FindPattern(_XOR_("game.dll"), _XOR_("44 8B 7C 24 ?? 41 3B 46 08"));
-                    Memory::Patch((LPVOID)(Recoil+9), RecoilByte, 1);
-                    gData.Recoil = !gData.Recoil;
-                    printf(_XOR_("[Active] No Recoil\n"));
-                }
-            }
-
-            if (checkboxes[i].title == _XOR_("No Laser Cannon Overheat"))
-            {
-                if (!gData.NoCannonOverheat)
-                {
-                    uintptr_t CannonOverheat = Memory::FindPattern(_XOR_("game.dll"), _XOR_("F3 0F 11 09 4C 8B C1 49"));
-                    Memory::Nop((LPVOID)(CannonOverheat), 4);
-                    gData.NoCannonOverheat = !gData.NoCannonOverheat;
-                    printf(_XOR_("[Active] No Cannon Laser Overheat\n"));
-                }
-            }
-
             if (checkboxes[i].title == _XOR_("Inf Special Weapon"))
             {
                 if (!gData.InfSpecWeapon)
@@ -491,27 +344,6 @@ DWORD WINAPI Payload(LPVOID lpParam)
                 }
             }
 
-            if (checkboxes[i].title == _XOR_("No Stationary Turret Overheat"))
-            {
-                if (!gData.NoStasTurretOverHeat)
-                {
-                    uintptr_t NoStasTurretOverHeat = Memory::FindPattern(_XOR_("game.dll"), _XOR_("F3 42 0F 11 84 32 ?? ?? ?? ?? 8B 55 38 43 89 94 35"));
-                    Memory::Nop((LPVOID)(NoStasTurretOverHeat), 10);
-                    gData.NoStasTurretOverHeat = !gData.NoStasTurretOverHeat;
-                    printf(_XOR_("[Active] No Stationary Turret Overheat\n"));
-                }
-            }
-
-            if (checkboxes[i].title == _XOR_("No JetPack Cooldown"))
-            {
-                if (!gData.JetpackNoCD)
-                {
-                    uintptr_t JetpackNoCD = Memory::FindPattern(_XOR_("game.dll"), _XOR_("8B 08 89 8C BE ?? ?? 00 00"));
-                    Memory::Nop((LPVOID)(JetpackNoCD + 2), 7);
-                    gData.JetpackNoCD = !gData.JetpackNoCD;
-                    printf(_XOR_("[Active] Jetpack No Cooldown\n"));
-                }
-            }
 
             if (checkboxes[i].title == _XOR_("No Backpack Shield Cooldown"))
             {
